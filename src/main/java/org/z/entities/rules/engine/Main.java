@@ -75,6 +75,7 @@ public class Main {
 		endTime = System.currentTimeMillis() - startTime;
 
 		sb.append("Fire rules took: " + endTime + " millisec").append(endl);
+		System.out.println("The boats after running the Drools Rules Engine: ");
 		System.out.println(boat1);
 		System.out.println(boat2); 
 	}
