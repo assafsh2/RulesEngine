@@ -13,6 +13,7 @@ import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;  
+import org.kie.api.runtime.rule.FactHandle;
 import org.z.entities.rules.engine.rules.OppositeTack;
 import org.z.entities.rules.engine.rules.SameTackNotOverlapped;
 import org.z.entities.rules.engine.rules.SameTackOverlapped;
@@ -68,15 +69,28 @@ public class Main {
 		Utils.setTack(boat2, wind);
 		Fact fact = new Fact(boat1, boat2, wind);
 
-		kSession.insert(fact);
-
+		FactHandle handle = kSession.insert(fact);
+		
+ 
+		
 		startTime = System.currentTimeMillis();
 		kSession.fireAllRules();
 		endTime = System.currentTimeMillis() - startTime;
 
 		sb.append("Fire rules took: " + endTime + " millisec").append(endl);
+		System.out.println("The boats after running the Drools Rules Engine: ");
 		System.out.println(boat1);
-		System.out.println(boat2); 
+		System.out.println(boat2);
+		
+		
+		//To run the same fact again
+		kSession.delete(handle);
+		kSession.insert(fact);
+		kSession.fireAllRules(); 
+		System.out.println("The boats after running the Drools Rules Engine: ");
+		System.out.println(boat1);
+		System.out.println(boat2);
+		
 	}
 
 	private static void runIfConditions() {
