@@ -1,0 +1,57 @@
+//created on: Nov 7, 2017
+package com.drools.demo
+
+import org.z.entities.rules.engine.Boat
+import org.z.entities.rules.engine.Fact  
+import org.z.entities.rules.engine.types.Tack  
+import static org.z.entities.rules.engine.utils.Utils.getOverlappedForBoats  
+import static org.z.entities.rules.engine.utils.Utils.getWindwardForBoats  
+
+rule "Opposite Tack" salience 100
+dialect "java"
+activation-group "sailing"
+   when 
+      $fact: Fact( $fact.getBoat1().getTack() != $fact.getBoat2().getTack()) 
+   then
+   if ($fact.getBoat1().getTack() == Tack.STARBOARD) {
+   	  $fact.getBoat1().setKeepMove(true);
+   	  $fact.getBoat2().setKeepMove(false);
+	} else {
+	  $fact.getBoat1().setKeepMove(false);
+   	  $fact.getBoat2().setKeepMove(true);
+	}    
+end		
+
+rule "SameTackNoOverlapped" salience 50
+dialect "java"
+activation-group "sailing"
+when 
+    $fact : Fact ( getOverlappedForBoats($fact.getBoat1(), $fact.getBoat2() ) != 0 )
+then
+	if (getOverlappedForBoats($fact.getBoat1(), $fact.getBoat2()) == 1) {
+		System.out.println("boat2 is clear ahead");
+		$fact.getBoat1().setKeepMove(false);
+		$fact.getBoat2().setKeepMove(true);
+	} else {
+		System.out.println("boat1 is clear ahead");
+		$fact.getBoat1().setKeepMove(true);
+		$fact.getBoat2().setKeepMove(false);
+	}	
+end
+
+rule "SameTackOverlapped" salience 10
+dialect "java"
+activation-group "sailing"
+when 
+   	$fact : Fact ( true )
+then 
+	if (getWindwardForBoats($fact.getBoat1(), $fact.getBoat2(), $fact.getWind()) == 1) {
+		System.out.println("boat2 is windward");
+		$fact.getBoat1().setKeepMove(true);
+		$fact.getBoat2().setKeepMove(false);
+	} else {
+		System.out.println("boat1 is windward");
+		$fact.getBoat1().setKeepMove(false);
+		$fact.getBoat2().setKeepMove(true);
+	}
+end
