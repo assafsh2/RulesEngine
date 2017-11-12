@@ -8,50 +8,51 @@ import static org.z.entities.rules.engine.utils.Utils.getOverlappedForBoats
 import static org.z.entities.rules.engine.utils.Utils.getWindwardForBoats  
 
 rule "Opposite Tack" salience 100
-dialect "java"
+dialect "mvel"
 activation-group "sailing"
    when 
-      $fact: Fact( $fact.getBoat1().getTack() != $fact.getBoat2().getTack()) 
+      $fact: Fact( $fact.boat1.tack != $fact.boat2.tack) 
    then
-   if ($fact.getBoat1().getTack() == Tack.STARBOARD) {
-   	  $fact.getBoat1().setKeepMove(true);
-   	  $fact.getBoat2().setKeepMove(false);
+   if ($fact.boat1.tack == Tack.STARBOARD) {
+   	  $fact.boat1.keepMove = true;
+   	  $fact.boat2.keepMove = false;
 	} else {
-	  $fact.getBoat1().setKeepMove(false);
-   	  $fact.getBoat2().setKeepMove(true);
+	  $fact.boat1.keepMove = false;
+   	  $fact.boat2.keepMove = true;
 	}    
 end		
 
 rule "SameTackNoOverlapped" salience 50
-dialect "java"
+dialect "mvel"
 activation-group "sailing"
 when 
-    $fact : Fact ( getOverlappedForBoats($fact.getBoat1(), $fact.getBoat2() ) != 0 )
+    $fact : Fact ( getOverlappedForBoats($fact.boat1, $fact.boat2 ) != 0 ) 
+    
 then
-	if (getOverlappedForBoats($fact.getBoat1(), $fact.getBoat2()) == 1) {
+	if (getOverlappedForBoats($fact.boat1, $fact.boat2) == 1) {
 		System.out.println("boat2 is clear ahead");
-		$fact.getBoat1().setKeepMove(false);
-		$fact.getBoat2().setKeepMove(true);
+		$fact.boat1.keepMove = false;
+		$fact.boat2.keepMove = true;
 	} else {
 		System.out.println("boat1 is clear ahead");
-		$fact.getBoat1().setKeepMove(true);
-		$fact.getBoat2().setKeepMove(false);
+		$fact.boat1.keepMove = true;
+		$fact.boat2.keepMove = false;
 	}	
 end
 
 rule "SameTackOverlapped" salience 10
-dialect "java"
+dialect "mvel"
 activation-group "sailing"
 when 
    	$fact : Fact ( true )
 then 
-	if (getWindwardForBoats($fact.getBoat1(), $fact.getBoat2(), $fact.getWind()) == 1) {
+	if (getWindwardForBoats($fact.boat1, $fact.boat2, $fact.wind) == 1) {
 		System.out.println("boat2 is windward");
-		$fact.getBoat1().setKeepMove(true);
-		$fact.getBoat2().setKeepMove(false);
+		$fact.boat1.keepMove = true;
+		$fact.boat2.keepMove = false;
 	} else {
 		System.out.println("boat1 is windward");
-		$fact.getBoat1().setKeepMove(false);
-		$fact.getBoat2().setKeepMove(true);
+		$fact.boat1.keepMove = false;
+		$fact.boat2.keepMove = true;
 	}
 end
