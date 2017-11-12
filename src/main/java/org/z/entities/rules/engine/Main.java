@@ -69,10 +69,7 @@ public class Main {
 		Utils.setTack(boat2, wind);
 		Fact fact = new Fact(boat1, boat2, wind);
 
-		FactHandle handle = kSession.insert(fact);
-		
- 
-		
+		kSession.insert(fact); 
 		startTime = System.currentTimeMillis();
 		kSession.fireAllRules();
 		endTime = System.currentTimeMillis() - startTime;
@@ -80,17 +77,7 @@ public class Main {
 		sb.append("Fire rules took: " + endTime + " millisec").append(endl);
 		System.out.println("The boats after running the Drools Rules Engine: ");
 		System.out.println(boat1);
-		System.out.println(boat2);
-		
-		
-		//To run the same fact again
-		kSession.delete(handle);
-		kSession.insert(fact);
-		kSession.fireAllRules(); 
-		System.out.println("The boats after running the Drools Rules Engine: ");
-		System.out.println(boat1);
-		System.out.println(boat2);
-		
+		System.out.println(boat2); 		
 	}
 
 	private static void runIfConditions() {
