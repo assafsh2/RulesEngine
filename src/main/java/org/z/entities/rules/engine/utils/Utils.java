@@ -34,8 +34,8 @@ public class Utils {
 	 */
 	public static int getOverlappedForBoats(Boat boat1, Boat boat2) {
 		return overlapped;
-	}
-
+	} 
+	
 	/**
 	 * Check which boat is the windward boat
 	 * 

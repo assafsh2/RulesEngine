@@ -1,19 +1,18 @@
 package org.z.entities.rules.engine;
 
-import java.io.FileInputStream;
+import java.io.File; 
 import java.io.FileNotFoundException; 
 
+import org.kie.api.io.ResourceType; 
+import org.kie.api.runtime.StatelessKieSession;
 import org.jeasy.rules.api.Facts;
 import org.jeasy.rules.api.Rules;
 import org.jeasy.rules.api.RulesEngine; 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.Message;
-import org.kie.api.builder.Results;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;  
-import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.builder.KieFileSystem; 
+import org.kie.api.runtime.KieContainer;    
+import org.kie.api.io.Resource;
 import org.z.entities.rules.engine.rules.OppositeTack;
 import org.z.entities.rules.engine.rules.SameTackNotOverlapped;
 import org.z.entities.rules.engine.rules.SameTackOverlapped;
@@ -42,19 +41,22 @@ public class Main {
 		long startTime = System.currentTimeMillis(); 
 	 
 	    KieServices kieServices = KieServices.Factory.get();
-	    KieFileSystem kfs = kieServices.newKieFileSystem();
-	    FileInputStream fis = new FileInputStream(  "src/main/resources/WhichBoatCanKeepMove.drl" );
-	    kfs.write( "src/main/resources/simple.drl",
-	                kieServices.getResources().newInputStreamResource( fis ) );
-	    KieBuilder kieBuilder = kieServices.newKieBuilder( kfs ).buildAll();
-	    Results results = kieBuilder.getResults();
-	    if( results.hasMessages( Message.Level.ERROR ) ){
-	        System.out.println( results.getMessages() );
-	        throw new IllegalStateException( "### errors ###" );
-	    }
+	    KieFileSystem kFileSystem = kieServices.newKieFileSystem();
+	    File file = new File( "src/main/resources/WhichBoatCanKeepMove.drl"); 
+        Resource resource = kieServices.getResources().newFileSystemResource(file).setResourceType(ResourceType.DRL);
+        kFileSystem.write( resource );  
+        
+	    File file2 = new File( "src/main/resources/RuleTrigger.drl"); 
+        Resource resource2 = kieServices.getResources().newFileSystemResource(file2).setResourceType(ResourceType.DRL);
+        kFileSystem.write( resource2 ); 
+
+        KieBuilder kbuilder = kieServices.newKieBuilder( kFileSystem ); 
+        kbuilder.buildAll();        
 	    KieContainer kieContainer =
 	        kieServices.newKieContainer( kieServices.getRepository().getDefaultReleaseId() );
-	    KieSession kSession = kieContainer.newKieSession();
+	   // KieSession kSession = kieContainer.newKieSession();
+	    
+	    StatelessKieSession kSession = kieContainer.newStatelessKieSession();
         
 		long endTime = System.currentTimeMillis() - startTime;
 		sb.append(">Drools Rules Engine:").append(endl);
@@ -67,17 +69,19 @@ public class Main {
 		Utils.setTack(boat1, wind);
 		Boat boat2 = new Boat(66, 77, "boat2");
 		Utils.setTack(boat2, wind);
-		Fact fact = new Fact(boat1, boat2, wind);
-
-		kSession.insert(fact); 
+		int overLappedInd = Utils.getOverlappedForBoats(boat1, boat2);
+		int windwardInd = Utils.getWindwardForBoats(boat1, boat2, wind);
+		
+		Fact fact = new Fact(boat1, boat2, wind, overLappedInd, windwardInd);
+ 
 		startTime = System.currentTimeMillis();
-		kSession.fireAllRules();
+		kSession.execute(fact); 
 		endTime = System.currentTimeMillis() - startTime;
 
 		sb.append("Fire rules took: " + endTime + " millisec").append(endl);
 		System.out.println("The boats after running the Drools Rules Engine: ");
 		System.out.println(boat1);
-		System.out.println(boat2); 		
+		System.out.println(boat2); 
 	}
 
 	private static void runIfConditions() {

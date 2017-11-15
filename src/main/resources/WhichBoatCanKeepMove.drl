@@ -1,58 +1,83 @@
-//created on: Nov 7, 2017
 package com.drools.demo
 
 import org.z.entities.rules.engine.Boat
 import org.z.entities.rules.engine.Fact  
+import org.z.entities.rules.engine.RuleTrigger 
 import org.z.entities.rules.engine.types.Tack  
 import static org.z.entities.rules.engine.utils.Utils.getOverlappedForBoats  
-import static org.z.entities.rules.engine.utils.Utils.getWindwardForBoats  
+import static org.z.entities.rules.engine.utils.Utils.getWindwardForBoats
 
-rule "Opposite Tack" salience 100
-dialect "mvel"
-activation-group "sailing"
+rule "Opposite Tack boat1 tack is STARBOARD"
+dialect "mvel" 
    when 
-      $fact: Fact( $fact.boat1.tack != $fact.boat2.tack) 
+      $fact:Fact($fact.boat1.tack != $fact.boat2.tack && 
+                 $fact.boat1.tack == Tack.STARBOARD) 
    then
-   if ($fact.boat1.tack == Tack.STARBOARD) {
    	  $fact.boat1.keepMove = true;
-   	  $fact.boat2.keepMove = false;
-	} else {
-	  $fact.boat1.keepMove = false;
-   	  $fact.boat2.keepMove = true;
-	}    
-end		
+   	  $fact.boat2.keepMove = false;   
+   	  insert(new RuleTrigger("ASSAF")); 
+end	
 
-rule "SameTackNoOverlapped" salience 50
-dialect "mvel"
-activation-group "sailing"
+rule "Opposite Tack boat1 tack is PORT" 
+no-loop
+dialect "mvel" 
+   when 
+      $fact:Fact( $fact.boat1.tack != $fact.boat2.tack && 
+                   $fact.boat1.tack == Tack.PORT) 
+   then
+ 	  $fact.boat1.keepMove = false;
+   	  $fact.boat2.keepMove = true;  
+   	   insert(new RuleTrigger("ASSAF"));   
+end		
+	
+rule "Same Tack Not Overlapped boat2 is clear ahead" 
+dialect "mvel" 
+no-loop 
 when 
-    $fact : Fact ( getOverlappedForBoats($fact.boat1, $fact.boat2 ) != 0 ) 
-    
-then
-	if (getOverlappedForBoats($fact.boat1, $fact.boat2) == 1) {
+	 $fact:Fact($fact.boat1.tack == $fact.boat2.tack &&
+			    $fact.overLappedInd == 1 )    
+then 
 		System.out.println("boat2 is clear ahead");
 		$fact.boat1.keepMove = false;
-		$fact.boat2.keepMove = true;
-	} else {
-		System.out.println("boat1 is clear ahead");
-		$fact.boat1.keepMove = true;
-		$fact.boat2.keepMove = false;
-	}	
+		$fact.boat2.keepMove = true;  
+		insert(new RuleTrigger("ASSAF"));
 end
 
-rule "SameTackOverlapped" salience 10
-dialect "mvel"
-activation-group "sailing"
+rule "Same Tack Not Overlapped boat1 is clear ahead"
+dialect "mvel" 
+no-loop 
 when 
-   	$fact : Fact ( true )
-then 
-	if (getWindwardForBoats($fact.boat1, $fact.boat2, $fact.wind) == 1) {
-		System.out.println("boat2 is windward");
+    $fact:Fact($fact.boat1.tack == $fact.boat2.tack &&
+    		   $fact.overLappedInd == -1 )   
+then  
+		System.out.println("boat1 is clear ahead");
 		$fact.boat1.keepMove = true;
-		$fact.boat2.keepMove = false;
-	} else {
+		$fact.boat2.keepMove = false;  
+		insert(new RuleTrigger("ASSAF"));
+end
+
+
+rule "Same Tack Overlapped boat1 is windward"  
+dialect "mvel" 
+when 
+    $fact:Fact($fact.boat1.tack == $fact.boat2.tack &&
+               $fact.overLappedInd == 0 &&
+               $fact.windwardInd == -1)   
+then  
 		System.out.println("boat1 is windward");
 		$fact.boat1.keepMove = false;
-		$fact.boat2.keepMove = true;
-	}
+		$fact.boat2.keepMove = true;  
 end
+
+rule "Same Tack Overlapped boat2 is windward"  
+dialect "mvel" 
+when 
+    $fact:Fact($fact.boat1.tack == $fact.boat2.tack &&
+               $fact.overLappedInd == 0 &&
+               $fact.windwardInd == 1)    
+then  
+		System.out.println("boat2 is windward");
+		$fact.boat1.keepMove = true;
+		$fact.boat2.keepMove = false;  
+end
+ 

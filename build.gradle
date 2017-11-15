@@ -30,10 +30,11 @@ dependencies {
 
 		compile "org.apache.avro:avro:1.8.1"
 		compile "org.kie:kie-api:7.4.1.Final"
-    	compile "org.drools:drools-compiler:7.4.1.Final"
+		compile "org.kie:kie-ci:7.4.1.Final"
+    	compile "org.drools:drools-compiler:7.4.1.Final" 
     	compile "ch.qos.logback:logback-classic:1.1.+"
-    	compile "org.slf4j:slf4j-api:1.7.+" 
-		compile group: 'org.drools', name: 'drools-core', version: '7.4.1.Final' 
+    	compile "org.slf4j:slf4j-api:1.7.+"  
+		compile group: 'org.drools', name: 'drools-core', version: '7.4.0.Final'
 
         testCompile 'junit:junit:4.12'
 }

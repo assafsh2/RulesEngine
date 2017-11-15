@@ -7,12 +7,16 @@ public class Fact {
 	private Boat boat1;
 	private Boat boat2;
 	private Wind wind;	
-	private int overlapped;
-
-	public Fact(Boat boat1, Boat boat2, Wind wind) { 
+	private int overLappedInd;
+	private int windwardInd;
+	
+	public Fact(Boat boat1, Boat boat2, Wind wind, int overLappedInd,
+			int windwardInd) { 
 		this.boat1 = boat1;
 		this.boat2 = boat2;
 		this.wind = wind;
+		this.overLappedInd = overLappedInd;
+		this.windwardInd = windwardInd;
 	}
 	
 	public Boat getBoat1() {
@@ -33,13 +37,18 @@ public class Fact {
 	public void setWind(Wind wind) {
 		this.wind = wind;
 	}
-	
-	public int getOverlapped() {
-		return overlapped;
+	public int getOverLappedInd() {
+		return overLappedInd;
+	}
+	public void setOverLappedInd(int overLappedInd) {
+		this.overLappedInd = overLappedInd;
+	}
+	public int getWindwardInd() {
+		return windwardInd;
+	}
+	public void setWindwardInd(int windwardInd) {
+		this.windwardInd = windwardInd;
 	}
 
-	public void setOverlapped(int overlapped) {
-		this.overlapped = overlapped;
-	}
 	
 }
