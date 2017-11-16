@@ -2,7 +2,7 @@ package com.drools.demo
 
 import org.z.entities.rules.engine.Boat
 import org.z.entities.rules.engine.Fact  
-import org.z.entities.rules.engine.RuleTrigger 
+import org.z.entities.rules.engine.KeepMoveUpdated
 import org.z.entities.rules.engine.types.Tack  
 import static org.z.entities.rules.engine.utils.Utils.getOverlappedForBoats  
 import static org.z.entities.rules.engine.utils.Utils.getWindwardForBoats
@@ -13,9 +13,10 @@ dialect "mvel"
       $fact:Fact($fact.boat1.tack != $fact.boat2.tack && 
                  $fact.boat1.tack == Tack.STARBOARD) 
    then
+   	System.out.println("Opposite Tack boat1 tack is STARBOARD");
    	  $fact.boat1.keepMove = true;
-   	  $fact.boat2.keepMove = false;   
-   	  insert(new RuleTrigger("ASSAF")); 
+   	  $fact.boat2.keepMove = false;
+   	  insert(new KeepMoveUpdated($fact.boat1));
 end	
 
 rule "Opposite Tack boat1 tack is PORT" 
@@ -25,9 +26,10 @@ dialect "mvel"
       $fact:Fact( $fact.boat1.tack != $fact.boat2.tack && 
                    $fact.boat1.tack == Tack.PORT) 
    then
+   System.out.println("Opposite Tack boat1 tack is PORT");
  	  $fact.boat1.keepMove = false;
-   	  $fact.boat2.keepMove = true;  
-   	   insert(new RuleTrigger("ASSAF"));   
+   	  $fact.boat2.keepMove = true;   
+   	  insert(new KeepMoveUpdated($fact.boat2)); 
 end		
 	
 rule "Same Tack Not Overlapped boat2 is clear ahead" 
@@ -40,7 +42,7 @@ then
 		System.out.println("boat2 is clear ahead");
 		$fact.boat1.keepMove = false;
 		$fact.boat2.keepMove = true;  
-		insert(new RuleTrigger("ASSAF"));
+		insert(new KeepMoveUpdated($fact.boat2)); 
 end
 
 rule "Same Tack Not Overlapped boat1 is clear ahead"
@@ -53,7 +55,7 @@ then
 		System.out.println("boat1 is clear ahead");
 		$fact.boat1.keepMove = true;
 		$fact.boat2.keepMove = false;  
-		insert(new RuleTrigger("ASSAF"));
+		insert(new KeepMoveUpdated($fact.boat1)); 
 end
 
 
@@ -66,7 +68,8 @@ when
 then  
 		System.out.println("boat1 is windward");
 		$fact.boat1.keepMove = false;
-		$fact.boat2.keepMove = true;  
+		$fact.boat2.keepMove = true; 
+		insert(new KeepMoveUpdated($fact.boat2));  
 end
 
 rule "Same Tack Overlapped boat2 is windward"  
@@ -79,5 +82,6 @@ then
 		System.out.println("boat2 is windward");
 		$fact.boat1.keepMove = true;
 		$fact.boat2.keepMove = false;  
+		insert(new KeepMoveUpdated($fact.boat1)); 
 end
  

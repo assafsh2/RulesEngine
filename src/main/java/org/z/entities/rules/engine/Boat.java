@@ -1,5 +1,8 @@
 package org.z.entities.rules.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.z.entities.rules.engine.types.Tack;
 
 public class Boat {
@@ -9,14 +12,17 @@ public class Boat {
 	private double course;
 	private Tack tack;
 	private boolean keepMove;
-	private String name;
+	public String name; 
+	private int speed;
+	private List<SpeedMessage> speedMessageList;
 
 	public Boat(double lat, double xLong, String name) {
 		this.lat = lat;
 		this.xLong = xLong;
 		this.tack = Tack.NONE;
 		this.keepMove = true;
-		this.name = name;
+		this.name = name; 
+		this.speedMessageList = new ArrayList<>();
 	}
 
 	public double getLat() {
@@ -57,11 +63,52 @@ public class Boat {
 
 	public void setKeepMove(boolean keepMove) {
 		this.keepMove = keepMove;
+	}  
+	
+	public String getName() {
+		return name;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	} 
+	
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	
+	public List<SpeedMessage> getSpeedMessageList() {
+		return speedMessageList;
+	}
+
+	public void setSpeedMessageList(List<SpeedMessage> speedMessageList) {
+		this.speedMessageList = speedMessageList;
+	}
+
+ 	public void makeSound() {
+		System.out.println("Boat "+name+" is making a sound!");
+	}
+ 	
+
+ 	public void raiseFlag() {
+		System.out.println("Boat "+name+" is raising a flag!");
+	}
+ 
+ 	public void reportSpeed(String target) {
+ 		System.out.println("Boat "+name+" is reporting the current speed "+speed+" to <"+target+">");
+ 		speedMessageList.add(new SpeedMessage(target, speed));
+ 	}
 
 	@Override
 	public String toString() {
-		return name + " [lat=" + lat + ", xLong=" + xLong + ", course="
-				+ course + ", tack=" + tack + ", keepMove=" + keepMove + "]";
-	}
+		return "Boat [lat=" + lat + ", xLong=" + xLong + ", course=" + course
+				+ ", tack=" + tack + ", keepMove=" + keepMove + ", name="
+				+ name + ", speed=" + speed + "]";
+	} 
 }
+
+ 

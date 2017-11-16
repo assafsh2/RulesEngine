@@ -1,0 +1,33 @@
+package com.drools.demo
+ 
+import org.z.entities.rules.engine.Boat
+import org.z.entities.rules.engine.KeepMoveUpdated
+import org.z.entities.rules.engine.BoatReportSpeed
+//Show example of Inferences
+rule "Keep move was updated - make a sound"
+dialect "mvel" 
+   when 
+ 		$keepMoveUpdated: KeepMoveUpdated()
+   then
+   		System.out.println("Rule call makeSound of "+$keepMoveUpdated.boat.name);  
+   		$keepMoveUpdated.boat.makeSound();
+end	
+ 
+rule "Keep move was updated - raise a flag"
+dialect "mvel" 
+   when 
+ 		$keepMoveUpdated: KeepMoveUpdated()
+   then
+   		System.out.println("Rule call raiseFlag of "+$keepMoveUpdated.boat.name);  
+   		$keepMoveUpdated.boat.raiseFlag();
+end	
+  
+rule "Boat is reporting the current speed"
+dialect "mvel" 
+   when 
+ 		$boatReportSpeed: BoatReportSpeed()
+   then
+   		System.out.println("Rule call reportSpeed of "+$boatReportSpeed.boat.name);  
+   		$boatReportSpeed.boat.reportSpeed("Boat is reporting the current speed");
+end	
+    

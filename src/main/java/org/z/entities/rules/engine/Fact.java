@@ -8,7 +8,7 @@ public class Fact {
 	private Boat boat2;
 	private Wind wind;	
 	private int overLappedInd;
-	private int windwardInd;
+	private int windwardInd;	
 	
 	public Fact(Boat boat1, Boat boat2, Wind wind, int overLappedInd,
 			int windwardInd) { 
@@ -16,7 +16,7 @@ public class Fact {
 		this.boat2 = boat2;
 		this.wind = wind;
 		this.overLappedInd = overLappedInd;
-		this.windwardInd = windwardInd;
+		this.windwardInd = windwardInd; 
 	}
 	
 	public Boat getBoat1() {

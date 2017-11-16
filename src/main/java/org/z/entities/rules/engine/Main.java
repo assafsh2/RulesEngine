@@ -1,7 +1,10 @@
 package org.z.entities.rules.engine;
 
+import java.io.BufferedWriter;
 import java.io.File; 
 import java.io.FileNotFoundException; 
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.kie.api.io.ResourceType; 
 import org.kie.api.runtime.StatelessKieSession;
@@ -28,10 +31,10 @@ public class Main {
 	private static String endl = "\n";
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		runJeasyRuleEngine();
-		System.out.println("===================================");
-		runIfConditions();
-		System.out.println("===================================");
+		//runJeasyRuleEngine();
+		//System.out.println("===================================");
+		//runIfConditions();
+		//System.out.println("===================================");
 		runDroolsRulesEngine();
 		
 		System.out.println("\n"+sb.toString());
@@ -44,11 +47,15 @@ public class Main {
 	    KieFileSystem kFileSystem = kieServices.newKieFileSystem();
 	    File file = new File( "src/main/resources/WhichBoatCanKeepMove.drl"); 
         Resource resource = kieServices.getResources().newFileSystemResource(file).setResourceType(ResourceType.DRL);
-        kFileSystem.write( resource );  
+        kFileSystem.write(resource);  
         
-	    File file2 = new File( "src/main/resources/RuleTrigger.drl"); 
+	    File file2 = new File( "src/main/resources/BoatActions.drl"); 
         Resource resource2 = kieServices.getResources().newFileSystemResource(file2).setResourceType(ResourceType.DRL);
-        kFileSystem.write( resource2 ); 
+        kFileSystem.write(resource2); 
+        
+	    File file3 = new File( "src/main/resources/SpeedActions.drl"); 
+        Resource resource3 = kieServices.getResources().newFileSystemResource(file3).setResourceType(ResourceType.DRL);
+        kFileSystem.write(resource3); 
 
         KieBuilder kbuilder = kieServices.newKieBuilder( kFileSystem ); 
         kbuilder.buildAll();        
@@ -71,17 +78,49 @@ public class Main {
 		Utils.setTack(boat2, wind);
 		int overLappedInd = Utils.getOverlappedForBoats(boat1, boat2);
 		int windwardInd = Utils.getWindwardForBoats(boat1, boat2, wind);
+		boat1.setSpeed(1333);
+		boat2.setSpeed(60);
+		 
 		
-		Fact fact = new Fact(boat1, boat2, wind, overLappedInd, windwardInd);
- 
-		startTime = System.currentTimeMillis();
-		kSession.execute(fact); 
-		endTime = System.currentTimeMillis() - startTime;
+		/*Fact fact = new Fact(boat1, boat2, wind, overLappedInd, windwardInd);
+		StringBuffer sb2 = new StringBuffer();
+		for(int i = 0; i < 30; i++) {
 
-		sb.append("Fire rules took: " + endTime + " millisec").append(endl);
+			startTime = System.currentTimeMillis();
+			Fact fact = new Fact(boat1, boat2, wind, overLappedInd, windwardInd);
+			kSession.execute(fact); 
+			Boat boat = new Boat(33, 44, "boat"+i);
+			boat.setSpeed(i*63);
+			kSession.execute(boat); 
+			//kSession.execute(boat2); 
+			endTime = System.currentTimeMillis() - startTime;
+			sb2.append(endTime).append(" ");
+		}
+		sb.append("Fire rules took: " + sb2.toString() + " millisec").append(endl);
 		System.out.println("The boats after running the Drools Rules Engine: ");
 		System.out.println(boat1);
 		System.out.println(boat2); 
+		*/
+		
+		StringBuffer output = new StringBuffer();
+		for(int i = 0; i < 1000; i++) {
+
+			new FireRuleThread(kSession, "thread_"+i,output).run();
+		}
+		
+		System.out.println(output.toString()); 
+		
+		try {
+		    BufferedWriter out = new BufferedWriter(new FileWriter("/home/badhat/workspace_engine_rules/RulesEngine/output_multi_thread.txt"));
+		    out.write(output.toString());  
+		    out.close();
+		                                             
+		}
+		catch (IOException e)
+		{
+		    System.out.println("Exception ");
+
+		}
 	}
 
 	private static void runIfConditions() {

@@ -3,6 +3,7 @@ package org.z.entities.rules.engine;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Before; 
 import org.junit.Test;
@@ -31,10 +32,14 @@ public class DroolsTests {
         Resource resource = kieServices.getResources().newFileSystemResource(file).setResourceType(ResourceType.DRL);
         kFileSystem.write( resource );  
         
-	    File file2 = new File( "src/main/resources/RuleTrigger.drl"); 
+	    File file2 = new File( "src/main/resources/BoatActions.drl"); 
         Resource resource2 = kieServices.getResources().newFileSystemResource(file2).setResourceType(ResourceType.DRL);
         kFileSystem.write( resource2 ); 
 
+	    File file3 = new File( "src/main/resources/SpeedActions.drl"); 
+        Resource resource3 = kieServices.getResources().newFileSystemResource(file3).setResourceType(ResourceType.DRL);
+        kFileSystem.write(resource3); 
+        
         KieBuilder kbuilder = kieServices.newKieBuilder( kFileSystem ); 
         kbuilder.buildAll();        
 	    KieContainer kieContainer =
@@ -77,7 +82,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),true);	
 	}
 	
-	@Test 
+ 	@Test 
 	public void sameTackNotOverlappedBoat1IsClearAhead () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -89,7 +94,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),false);	
 	}
 	
-	@Test 
+ 	@Test 
 	public void sameTackNotOverlappedBoat2IsClearAhead () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -102,12 +107,12 @@ public class DroolsTests {
 	}
 
 	
-	@Test 
+	//@Test 
 	public void oppositeTack1 () { 
 		fact.getBoat1().setTack(Tack.STARBOARD);
-		fact.getBoat2().setTack(Tack.PORT);
+		fact.getBoat2().setTack(Tack.PORT); 
 		
-		kSession.execute(fact);
+		kSession.execute(fact); 
 		
 		assertEquals(fact.getBoat1().isKeepMove(),true);
 		assertEquals(fact.getBoat2().isKeepMove(),false);	
@@ -122,5 +127,27 @@ public class DroolsTests {
 		
 		assertEquals(fact.getBoat1().isKeepMove(),false);
 		assertEquals(fact.getBoat2().isKeepMove(),true);	
+	}
+	
+	@Test 
+	public void repostBoatSpeedNegativeTest () {  
+		
+		fact.getBoat1().setSpeed(345353);
+		kSession.execute(fact.getBoat1());
+		String ruleName = "Boat is reporting the current speed";		
+		List<SpeedMessage> list = fact.getBoat1().getSpeedMessageList(); 
+		
+		assertEquals(list.contains(new SpeedMessage(ruleName,4444)),false);	
+	}
+	
+	@Test 
+	public void repostBoatSpeedPositiveTest () {  
+		
+		fact.getBoat1().setSpeed(345353);
+		kSession.execute(fact.getBoat1());
+		String ruleName = "Boat is reporting the current speed";		
+		List<SpeedMessage> list = fact.getBoat1().getSpeedMessageList(); 
+		
+		assertEquals(list.contains(new SpeedMessage(ruleName,345353)),false);	
 	}
 }
