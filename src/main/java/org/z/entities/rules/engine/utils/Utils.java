@@ -54,7 +54,7 @@ public class Utils {
 		}
 	}
 
-	public static void generateOverlapped() {
+	public static int generateOverlapped() {
 		int mod = random.nextInt() % 3;
 		if (mod == 0) {
 			overlapped = 0;
@@ -62,5 +62,7 @@ public class Utils {
 			overlapped = 1;
 		} else
 			overlapped = -1;
+		
+		return overlapped;
 	}
 }

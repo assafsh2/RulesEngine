@@ -14,6 +14,7 @@ public class Boat {
 	private boolean keepMove;
 	public String name; 
 	private int speed;
+	private double elevation;
 	private List<SpeedMessage> speedMessageList;
 
 	public Boat(double lat, double xLong, String name) {
@@ -81,6 +82,14 @@ public class Boat {
 		this.speed = speed;
 	}
 	
+	public double getElevation() {
+		return elevation;
+	}
+
+	public void setElevation(double elevation) {
+		this.elevation = elevation;
+	}
+	
 	public List<SpeedMessage> getSpeedMessageList() {
 		return speedMessageList;
 	}
@@ -105,10 +114,11 @@ public class Boat {
 
 	@Override
 	public String toString() {
-		return "Boat [lat=" + lat + ", xLong=" + xLong + ", course=" + course
-				+ ", tack=" + tack + ", keepMove=" + keepMove + ", name="
-				+ name + ", speed=" + speed + "]";
-	} 
+		return "Boat [name=" + name + ", tack=" + tack + ", course=" + course
+				+ ", elevation=" + elevation + ", speed=" + speed
+				+ ", keepMove=" + keepMove + "]";
+	}
+ 
 }
 
  

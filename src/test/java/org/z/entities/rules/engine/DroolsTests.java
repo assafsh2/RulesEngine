@@ -56,7 +56,7 @@ public class DroolsTests {
 		fact = new Fact(boat1, boat2, wind, overLappedInd, windwardInd); 
 	}
 
-	@Test 
+	//@Test 
 	public void sameTackOverlappedBoat2IsWindward () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -69,7 +69,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),false);	
 	}
 	
-	@Test 
+	//@Test 
 	public void sameTackOverlappedBoat1IsWindward () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -82,7 +82,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),true);	
 	}
 	
- 	@Test 
+ 	//@Test 
 	public void sameTackNotOverlappedBoat1IsClearAhead () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -94,7 +94,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),false);	
 	}
 	
- 	@Test 
+ 	//@Test 
 	public void sameTackNotOverlappedBoat2IsClearAhead () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.PORT);		
@@ -107,7 +107,7 @@ public class DroolsTests {
 	}
 
 	
-	//@Test 
+	////@Test 
 	public void oppositeTack1 () { 
 		fact.getBoat1().setTack(Tack.STARBOARD);
 		fact.getBoat2().setTack(Tack.PORT); 
@@ -118,7 +118,7 @@ public class DroolsTests {
 		assertEquals(fact.getBoat2().isKeepMove(),false);	
 	}
 	
-	@Test 
+	//@Test 
 	public void oppositeTack2 () { 
 		fact.getBoat1().setTack(Tack.PORT);
 		fact.getBoat2().setTack(Tack.STARBOARD);
@@ -132,7 +132,7 @@ public class DroolsTests {
 	@Test 
 	public void repostBoatSpeedNegativeTest () {  
 		
-		fact.getBoat1().setSpeed(345353);
+		fact.getBoat1().setSpeed(5555);
 		kSession.execute(fact.getBoat1());
 		String ruleName = "Boat is reporting the current speed";		
 		List<SpeedMessage> list = fact.getBoat1().getSpeedMessageList(); 
@@ -143,11 +143,13 @@ public class DroolsTests {
 	@Test 
 	public void repostBoatSpeedPositiveTest () {  
 		
-		fact.getBoat1().setSpeed(345353);
+		fact.getBoat1().setSpeed(22);
+		fact.getBoat1().setElevation(4000);
+		fact.getBoat1().setCourse(400);
 		kSession.execute(fact.getBoat1());
 		String ruleName = "Boat is reporting the current speed";		
 		List<SpeedMessage> list = fact.getBoat1().getSpeedMessageList(); 
 		
-		assertEquals(list.contains(new SpeedMessage(ruleName,345353)),false);	
+		assertEquals(list.contains(new SpeedMessage(ruleName,22)),true);	
 	}
 }
